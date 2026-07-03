@@ -20,7 +20,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Parse args for training')
     # for train
-    parser.add_argument('--script', type=str, default='ostrack', choices=['ostrack'],
+    parser.add_argument('--script', type=str, default='ostrack', choices=['ostrack', 'setrack'],
                         help='training script name')
     parser.add_argument('--config', type=str, default='vitb_256_mae_ce_32x4_ep300', help='yaml configure file name')
     args = parser.parse_args()
@@ -107,6 +107,24 @@ if __name__ == "__main__":
     if args.script == "ostrack":
         model_module = importlib.import_module('lib.models')
         model_constructor = model_module.build_ostrack
+        model = model_constructor(cfg, training=False)
+        # get the template and search
+        template = torch.randn(bs, 3, z_sz, z_sz)
+        search = torch.randn(bs, 3, x_sz, x_sz)
+        # transfer to device
+        model = model.to(device)
+        template = template.to(device)
+        search = search.to(device)
+
+        merge_layer = cfg.MODEL.BACKBONE.MERGE_LAYER
+        if merge_layer <= 0:
+            evaluate_vit(model, template, search)
+        else:
+            evaluate_vit_separate(model, template, search)
+
+    elif args.script == "setrack":
+        model_module = importlib.import_module('lib.models')
+        model_constructor = model_module.build_setrack
         model = model_constructor(cfg, training=False)
         # get the template and search
         template = torch.randn(bs, 3, z_sz, z_sz)

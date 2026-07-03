@@ -1,4 +1,7 @@
-import jpeg4py
+try:
+    import jpeg4py
+except ImportError:
+    jpeg4py = None
 import cv2 as cv
 from PIL import Image
 import numpy as np
@@ -33,6 +36,8 @@ default_image_loader.use_jpeg4py = None
 
 def jpeg4py_loader(path):
     """ Image reading using jpeg4py https://github.com/ajkxyz/jpeg4py"""
+    if jpeg4py is None:
+        return None
     try:
         return jpeg4py.JPEG(path).decode()
     except Exception as e:
@@ -56,18 +61,18 @@ def opencv_loader(path):
 
 def jpeg4py_loader_w_failsafe(path):
     """ Image reading using jpeg4py https://github.com/ajkxyz/jpeg4py"""
-    try:
-        return jpeg4py.JPEG(path).decode()
-    except:
+    if jpeg4py is not None:
         try:
-            im = cv.imread(path, cv.IMREAD_COLOR)
-
-            # convert to rgb and return
-            return cv.cvtColor(im, cv.COLOR_BGR2RGB)
-        except Exception as e:
-            print('ERROR: Could not read image "{}"'.format(path))
-            print(e)
-            return None
+            return jpeg4py.JPEG(path).decode()
+        except:
+            pass
+    try:
+        im = cv.imread(path, cv.IMREAD_COLOR)
+        return cv.cvtColor(im, cv.COLOR_BGR2RGB)
+    except Exception as e:
+        print('ERROR: Could not read image "{}"'.format(path))
+        print(e)
+        return None
 
 
 def opencv_seg_loader(path):

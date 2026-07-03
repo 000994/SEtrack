@@ -168,3 +168,23 @@ pytracking/tracking_results/
 pytracking/result_plots/
 pytracking/evaluation/local.py
 pytracking/run_local.py
+
+# === SETrack reproduction additions ===
+# Large data, model weights, and outputs
+data/
+output/
+pretrained_models/
+lib/test/tracking_results/
+tensorboard/
+*.pth
+*.pth.tar
+*.pt
+*.ckpt
+*.onnx
+*.bak
+*.tmp
+
+# IDE / OS
+.vscode/
+Thumbs.db
+.DS_Store

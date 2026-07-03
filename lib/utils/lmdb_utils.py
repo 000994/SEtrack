@@ -1,4 +1,7 @@
-import lmdb
+try:
+    import lmdb
+except ImportError:
+    lmdb = None
 import numpy as np
 import cv2
 import json
@@ -9,6 +12,8 @@ LMDB_FILELISTS = dict()
 
 
 def get_lmdb_handle(name):
+    if lmdb is None:
+        raise RuntimeError("lmdb module is not available. Install it via 'pip install lmdb'")
     global LMDB_HANDLES, LMDB_FILELISTS
     item = LMDB_HANDLES.get(name, None)
     if item is None:
@@ -41,7 +46,7 @@ def decode_json(lmdb_fname, key_name):
     return json.loads(decode_str(lmdb_fname, key_name))
 
 
-if __name__ == "__main__":
+if lmdb is not None and __name__ == "__main__":
     lmdb_fname = "/data/sda/v-yanbi/iccv21/LittleBoy_clean/data/got10k_lmdb"
     '''Decode image'''
     # key_name = "test/GOT-10k_Test_000001/00000001.jpg"
