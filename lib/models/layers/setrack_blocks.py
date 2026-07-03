@@ -276,7 +276,7 @@ class RedundantInformationPruning(nn.Module):
 
     def __init__(self, template_size=8, search_size=16, dim=768,
                  center_ratio=0.5, energy_ratio=0.7, min_keep_ratio=0.5,
-                 sim_aggregation="mean", fill_value_mode="zero", soft_scale=0.1, eps=1e-6):
+                 sim_aggregation="mean", fill_value_mode="zero", soft_scale=0.1, gate_alpha=0.3, eps=1e-6):
         """
         Args:
             template_size: int, template grid size (128/16=8 for patch_size=16)
@@ -289,6 +289,7 @@ class RedundantInformationPruning(nn.Module):
             sim_aggregation: str, "mean" or "max" aggregation over center template dim
             fill_value_mode: str, "zero" (fill with 0), "original" (keep original),
                              or "soft" (multiply removed tokens by soft_scale)
+            gate_alpha: float, alpha for gate mode (default 0.3)
             soft_scale: float, scale factor for soft fill mode (default 0.1)
             eps: float, numerical stability
         """
@@ -302,6 +303,7 @@ class RedundantInformationPruning(nn.Module):
         self.sim_aggregation = sim_aggregation
         self.fill_value_mode = fill_value_mode
         self.soft_scale = soft_scale
+        self.gate_alpha = gate_alpha
         self.eps = eps
 
         # Compute center indices once
@@ -423,8 +425,15 @@ class RedundantInformationPruning(nn.Module):
                 r_idx = remove_list[b]
                 if len(r_idx) > 0:
                     restored_tokens[b, r_idx] = search_tokens[b, r_idx] * self.soft_scale
+        elif self.fill_value_mode == "gate":
+            # Gate-fill: continuous soft-gating based on similarity scores
+            score_min = scores.min(dim=1, keepdim=True)[0]
+            score_max = scores.max(dim=1, keepdim=True)[0]
+            gate = (scores - score_min) / (score_max - score_min + 1e-6)
+            scale = 1.0 - self.gate_alpha * (1.0 - gate)
+            restored_tokens = search_tokens * scale.unsqueeze(-1)
         else:
-            raise ValueError("Unknown fill_value_mode: %s (use 'zero', 'original', or 'soft')"
+            raise ValueError("Unknown fill_value_mode: %s (use 'zero., .original., .soft., or .gate.)"
                              % self.fill_value_mode)
 
         # ---- 8. Build pruning info ----

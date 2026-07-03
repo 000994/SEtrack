@@ -72,6 +72,7 @@ class VisionTransformerSETrack(nn.Module):
                  pruning_sim_aggregation="mean",
                  pruning_fill_value="zero",
                  pruning_soft_scale=0.1,
+                 pruning_gate_alpha=0.3,
                  # Kept for config compatibility, IGNORED
                  ce_loc=None, ce_keep_ratio=None):
         super().__init__()
@@ -180,6 +181,7 @@ class VisionTransformerSETrack(nn.Module):
                 sim_aggregation=pruning_sim_aggregation,
                 fill_value_mode=pruning_fill_value,
                 soft_scale=pruning_soft_scale,
+                gate_alpha=pruning_gate_alpha,
             )
         else:
             self.redundant_pruning = RedundantPruningPlaceholder()
