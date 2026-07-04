@@ -16,10 +16,10 @@ def _save_tracker_output(seq: Sequence, tracker: Tracker, output: dict):
 
     if not os.path.exists(tracker.results_dir):
         print("create tracking result dir:", tracker.results_dir)
-        os.makedirs(tracker.results_dir)
+        os.makedirs(tracker.results_dir, exist_ok=True)
     if seq.dataset in ['trackingnet', 'got10k']:
         if not os.path.exists(os.path.join(tracker.results_dir, seq.dataset)):
-            os.makedirs(os.path.join(tracker.results_dir, seq.dataset))
+            os.makedirs(os.path.join(tracker.results_dir, seq.dataset), exist_ok=True)
     '''2021.1.5 create new folder for these two datasets'''
     if seq.dataset in ['trackingnet', 'got10k']:
         base_results_path = os.path.join(tracker.results_dir, seq.dataset, seq.name)
