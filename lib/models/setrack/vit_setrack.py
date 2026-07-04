@@ -73,6 +73,7 @@ class VisionTransformerSETrack(nn.Module):
                  pruning_fill_value="zero",
                  pruning_soft_scale=0.1,
                  pruning_gate_alpha=0.3,
+                 pruning_position="after_cross",
                  # Kept for config compatibility, IGNORED
                  ce_loc=None, ce_keep_ratio=None):
         super().__init__()
@@ -185,6 +186,7 @@ class VisionTransformerSETrack(nn.Module):
             )
         else:
             self.redundant_pruning = RedundantPruningPlaceholder()
+        self.pruning_position = pruning_position
 
         # ---- Cached template features (populated during forward) ----
         self.cached_template_features = []

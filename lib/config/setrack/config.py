@@ -55,6 +55,7 @@ cfg.MODEL.BACKBONE.PRUNING_SIM_AGGREGATION = "mean"  # "mean" or "max"
 cfg.MODEL.BACKBONE.PRUNING_FILL_VALUE = "zero"       # zero-fill pruned positions
 cfg.MODEL.BACKBONE.PRUNING_SOFT_SCALE = 0.1         # scale for "soft" fill mode
 cfg.MODEL.BACKBONE.PRUNING_GATE_ALPHA = 0.3         # alpha for "gate" fill mode
+cfg.MODEL.BACKBONE.PRUNING_POSITION = "after_cross"  # RIM placement: "after_cross" or "before_last_cross"
 cfg.MODEL.BACKBONE.PRUNING_RESTORE_FULL_TOKENS = True  # restore to full grid for head compat
 
 # MODEL.HEAD

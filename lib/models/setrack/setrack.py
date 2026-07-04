@@ -175,6 +175,7 @@ def build_setrack(cfg, training=True):
             pruning_fill_value=getattr(cfg.MODEL.BACKBONE, 'PRUNING_FILL_VALUE', 'zero'),
             pruning_soft_scale=getattr(cfg.MODEL.BACKBONE, 'PRUNING_SOFT_SCALE', 0.1),
             pruning_gate_alpha=getattr(cfg.MODEL.BACKBONE, "PRUNING_GATE_ALPHA", 0.3),
+            pruning_position=getattr(cfg.MODEL.BACKBONE, "PRUNING_POSITION", "after_cross"),
         )
         hidden_dim = backbone.embed_dim
         patch_start_index = 1
